@@ -5,9 +5,13 @@
 		"build": "bun build src/index.ts --outdir dist"
 	},
 	"devDependencies": {
-		"@types/bun": "latest"
+		"@timobechtel/style": "^1.14.0",
+		"@types/bun": "latest",
+		"eslint": "^8.57.1",
+		"prettier": "^3.6.2",
+		"semantic-release": "^24.2.7"
 	},
 	"peerDependencies": {
-		"typescript": "^5"
+		"typescript": "^5.8.3"
 	}
 }

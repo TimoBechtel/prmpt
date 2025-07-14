@@ -1,17 +1,36 @@
 {
-	"name": "prmpt",
-	"type": "module",
-	"scripts": {
-		"build": "bun build src/index.ts --outdir dist"
-	},
-	"devDependencies": {
-		"@timobechtel/style": "^1.14.0",
-		"@types/bun": "latest",
-		"eslint": "^8.57.1",
-		"prettier": "^3.6.2",
-		"semantic-release": "^24.2.7"
-	},
-	"peerDependencies": {
-		"typescript": "^5.8.3"
-	}
+  "name": "prmpt",
+  "type": "module",
+  "scripts": {
+    "build": "zshy"
+  },
+  "zshy": {
+    "exports": {
+      ".": "./src/index.ts"
+    }
+  },
+  "devDependencies": {
+    "@timobechtel/style": "^1.14.0",
+    "@types/bun": "latest",
+    "eslint": "^8.57.1",
+    "prettier": "^3.6.2",
+    "semantic-release": "^24.2.7",
+    "zshy": "^0.2.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.cts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.cts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  }
 }

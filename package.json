@@ -1,0 +1,13 @@
+{
+	"name": "prmpt",
+	"type": "module",
+	"scripts": {
+		"build": "bun build src/index.ts --outdir dist"
+	},
+	"devDependencies": {
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	}
+}

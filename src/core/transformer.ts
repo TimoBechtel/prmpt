@@ -1,6 +1,8 @@
 export type Transformer = (value: string) => string;
 
 export const builtInTransformers: Transformer[] = [
+  // normalize line endings
+  (v) => v.replaceAll('\r\n', '\n'),
   // allow comments to be added in the prompt
   (v) => v.replaceAll(/\/\/[^\n]*/g, ''),
   (v) => v.replaceAll(/[\t ]+/g, ' '),

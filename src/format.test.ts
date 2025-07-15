@@ -25,8 +25,8 @@ describe('format', () => {
   test('should allow comments in the prompt', () => {
     expect(format`
       // This is a comment
-      Hello
-      // This is another comment
+      Hello // this is another comment
+      // This too
       World // this is also a comment
     `).toBe('Hello\nWorld');
   });

@@ -1,6 +1,4 @@
-import { builtInStringifier, type AnyStringifier } from './core/stringifier';
-import { builtInTransformers, type Transformer } from './core/transformer';
-import { format } from './format';
+import { format as defaultFormat, type FormatFn } from './format';
 
 const ARGUMENT_KEY_PREFIX = '.';
 
@@ -17,25 +15,17 @@ type TemplateValue<T> =
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   | (unknown & {});
 
-interface TemplateFn {
-  <T extends Record<string, unknown>>(
-    strings: TemplateStringsArray,
-    ...values: TemplateValue<T>[]
-  ): (args: T) => string;
-  with(config: {
-    stringifier?: AnyStringifier[];
-    transformers?: Transformer[];
-  }): TemplateFn;
-  only(config: {
-    stringifier?: AnyStringifier[];
-    transformers?: Transformer[];
-  }): TemplateFn;
-}
+type TemplateFn = <T extends Record<string, unknown>>(
+  strings: TemplateStringsArray,
+  ...values: TemplateValue<T>[]
+) => (args: T) => string;
 
-function createTemplate(config: {
-  stringifier: AnyStringifier[];
-  transformers: Transformer[];
-}): TemplateFn {
+export function createTemplate(
+  config: {
+    format?: FormatFn;
+  } = {},
+): TemplateFn {
+  const format = config.format ?? defaultFormat;
   const templateFn = <T extends Record<string, unknown>>(
     strings: TemplateStringsArray,
     ...values: TemplateValue<T>[]
@@ -58,32 +48,11 @@ function createTemplate(config: {
 
         return value;
       });
-      return format.only(config)(strings, ...resovledValues);
+      return format(strings, ...resovledValues);
     };
   };
-
-  templateFn.with = (newConfig: {
-    stringifier?: AnyStringifier[];
-    transformers?: Transformer[];
-  }) =>
-    createTemplate({
-      stringifier: [...(newConfig.stringifier ?? []), ...config.stringifier],
-      transformers: [...(newConfig.transformers ?? []), ...config.transformers],
-    });
-
-  templateFn.only = (newConfig: {
-    stringifier?: AnyStringifier[];
-    transformers?: Transformer[];
-  }) =>
-    createTemplate({
-      stringifier: newConfig.stringifier ?? config.stringifier,
-      transformers: newConfig.transformers ?? config.transformers,
-    });
 
   return templateFn;
 }
 
-export const template = createTemplate({
-  stringifier: builtInStringifier,
-  transformers: builtInTransformers,
-});
+export const template = createTemplate();

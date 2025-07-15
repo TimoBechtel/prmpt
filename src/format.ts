@@ -5,59 +5,68 @@ import {
 } from './core/stringifier';
 import { builtInTransformers, type Transformer } from './core/transformer';
 
-export interface FormatFn {
-  (strings: TemplateStringsArray, ...values: unknown[]): string;
+export type FormatFn = (
+  strings: TemplateStringsArray,
+  ...values: unknown[]
+) => string;
 
-  with(config: {
+export function createFormat(
+  config: {
     stringifier?: AnyStringifier[];
     transformers?: Transformer[];
-  }): FormatFn;
+    /**
+     * If true, the built-in stringifiers and transformers will be replaced by the ones provided.
+     * Omitting stringifier or transformers will use the built-in ones.
+     *
+     * You can still import the built-in stringifiers and transformers to mix and match.
+     *
+     * @default false
+     *
+     * @example
+     * ```ts
+     * // replaces built-in stringifiers, but keeps built-in transformers
+     * import { dateStringifier, booleanStringifier } from 'prmpt';
+     * const format = createFormat({
+     *   stringifier: [dateStringifier, booleanStringifier],
+     *   replaceBuiltIns: true,
+     * });
+     * ```
+     */
+    replaceBuiltIns?: boolean;
+  } = {},
+): FormatFn {
+  const stringifiers = config.replaceBuiltIns
+    ? (config.stringifier ?? builtInStringifier)
+    : //   add custom ones first, so they can override built-in ones
+      [...(config.stringifier ?? []), ...builtInStringifier];
+  const transformers = config.replaceBuiltIns
+    ? (config.transformers ?? builtInTransformers)
+    : //   add custom ones first, so they can override built-in ones
+      [...(config.transformers ?? []), ...builtInTransformers];
 
-  only(config: {
-    stringifier?: AnyStringifier[];
-    transformers?: Transformer[];
-  }): FormatFn;
-}
-
-function createFormatFn(config: {
-  stringifier: AnyStringifier[];
-  transformers: Transformer[];
-}): FormatFn {
   const formatFn: FormatFn = (strings, ...values) => {
     const result = strings.reduce((acc, string, index) => {
       const value = values[index];
 
       const stringify = (value: unknown) => {
         const stringifier =
-          config.stringifier.find((stringifier) => stringifier.when(value)) ??
+          stringifiers.find((stringifier) => stringifier.when(value)) ??
           fallbackStringifier;
         return stringifier.stringify(value, stringify);
       };
 
       return acc + string + stringify(value);
     }, '');
-    return config.transformers.reduce(
-      (acc, transformer) => transformer(acc),
-      result,
-    );
+    return transformers.reduce((acc, transformer) => transformer(acc), result);
   };
-
-  formatFn.with = (newConfig) =>
-    createFormatFn({
-      //  add new stringifiers to the start of the list -> prioritize new stringifiers
-      stringifier: [...(newConfig.stringifier ?? []), ...config.stringifier],
-      transformers: [...(newConfig.transformers ?? []), ...config.transformers],
-    });
-  formatFn.only = (newConfig) =>
-    createFormatFn({
-      stringifier: newConfig.stringifier ?? config.stringifier,
-      transformers: newConfig.transformers ?? config.transformers,
-    });
 
   return formatFn;
 }
 
-export const format = createFormatFn({
-  stringifier: builtInStringifier,
-  transformers: builtInTransformers,
-});
+export const format = createFormat();
+
+/**
+ * // TODO:
+ * - use factory function instead of chaining with/only? prevents prototype props intellisense
+ * - add branded type for formatted string?
+ */

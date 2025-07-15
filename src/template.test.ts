@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { stringifier } from './core/stringifier';
-import { template } from './template';
+import { createFormat } from './format';
+import { createTemplate, template } from './template';
 
 describe('template', () => {
   test('should return a function', () => {
@@ -22,28 +23,41 @@ describe('template', () => {
   });
 
   test('should allow custom stringifiers', () => {
+    const format = createFormat({
+      stringifier: [
+        stringifier({
+          when: (value) => value instanceof Date,
+          stringify: (value) =>
+            value.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+            }),
+        }),
+      ],
+    });
+    const template = createTemplate({
+      format,
+    });
+
     expect(
-      template.with({
-        stringifier: [
-          stringifier({
-            when: (value) => value instanceof Date,
-            stringify: (value) =>
-              value.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-              }),
-          }),
-        ],
-      })<{
+      template<{
         date: Date;
       }>`Date is ${'.date'}`({ date: new Date('2025-01-01') }),
     ).toBe('Date is 01/01/2025');
   });
 
   test('allows overriding transformers', () => {
+    const format = createFormat({
+      transformers: [(value) => value.toUpperCase()],
+      replaceBuiltIns: true,
+    });
+    const template = createTemplate({
+      format,
+    });
+
     expect(
-      template.only({ transformers: [(value) => value.toUpperCase()] })<{
+      template<{
         name: string;
       }>`
          Hello

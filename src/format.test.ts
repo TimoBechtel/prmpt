@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import { stringifier } from './core/stringifier';
-import { format } from './format';
+import { createFormat, format } from './format';
 
 describe('format', () => {
   test('should trim whitespace', () => {
@@ -32,7 +32,7 @@ describe('format', () => {
   });
 
   test('should allow custom stringifiers', () => {
-    expect(format.with({
+    const customFormat = createFormat({
       stringifier: [
         stringifier({
           when: (value) => value instanceof Date,
@@ -44,7 +44,9 @@ describe('format', () => {
             }),
         }),
       ],
-    })`
+    });
+
+    expect(customFormat`
       ${new Date('2025-01-01')}
     `).toBe(
       new Date('2025-01-01').toLocaleDateString('de-DE', {
@@ -56,17 +58,22 @@ describe('format', () => {
   });
 
   test('should allow custom transformers', () => {
-    expect(format.with({
+    const customFormat = createFormat({
       transformers: [(value) => value.toUpperCase()],
-    })`
+    });
+
+    expect(customFormat`
         Hello
       `).toBe('HELLO');
   });
 
   test('should allow overriding transformers', () => {
-    expect(format.only({
+    const customFormat = createFormat({
       transformers: [(value) => value.toUpperCase()],
-    })`
+      replaceBuiltIns: true,
+    });
+
+    expect(customFormat`
         Hello
       `).toBe(`
         HELLO

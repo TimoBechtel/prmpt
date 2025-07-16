@@ -10,6 +10,23 @@ describe('format', () => {
     `).toBe('Hello\nWorld');
   });
 
+  test('should keep single empty newline', () => {
+    expect(format`
+      Hello
+
+      World
+    `).toBe('Hello\n\nWorld');
+  });
+
+  test('should remove more than 2 consecutive empty newlines', () => {
+    expect(format`
+      Hello
+
+
+      World
+    `).toBe('Hello\n\nWorld');
+  });
+
   test('should format Date objects', () => {
     expect(format`
       ${new Date('2025-01-01')}
@@ -28,7 +45,7 @@ describe('format', () => {
       Hello // this is another comment
       // This too
       World // this is also a comment
-    `).toBe('Hello\nWorld');
+    `).toBe('Hello\n\nWorld');
   });
 
   test('should allow custom stringifiers', () => {

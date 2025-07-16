@@ -5,14 +5,39 @@ import {
 } from './core/stringifier';
 import { builtInTransformers, type Transformer } from './core/transformer';
 
+/**
+ * Formats and cleans up a given template string.
+ *
+ * @example
+ * ```ts
+ * const prompt = format`Adhere to the following guidelines: \n ${guidelines}`;
+ * ```
+ */
 export type FormatFn = (
   strings: TemplateStringsArray,
   ...values: unknown[]
 ) => string;
 
+/**
+ * Create a custom format instance.
+ */
 export function createFormat(
   config: {
+    /**
+     * List of stringifiers to use.
+     *
+     * Stringifiers convert any value into a string.
+     *
+     * @default builtInStringifier
+     */
     stringifier?: AnyStringifier[];
+    /**
+     * List of transformers to use.
+     *
+     * Transformers allow you to modify the stringified output after it has been stringified.
+     *
+     * @default builtInTransformers
+     */
     transformers?: Transformer[];
     /**
      * If true, the built-in stringifiers and transformers will be replaced by the ones provided.
@@ -44,7 +69,7 @@ export function createFormat(
     : //   add custom ones first, so they can override built-in ones
       [...(config.transformers ?? []), ...builtInTransformers];
 
-  const formatFn: FormatFn = (strings, ...values) => {
+  return (strings, ...values) => {
     const result = strings.reduce((acc, string, index) => {
       const value = values[index];
 
@@ -59,14 +84,19 @@ export function createFormat(
     }, '');
     return transformers.reduce((acc, transformer) => transformer(acc), result);
   };
-
-  return formatFn;
 }
 
+/**
+ * Formats and cleans up a given template string.
+ *
+ * @example
+ * ```ts
+ * const prompt = format`Adhere to the following guidelines: \n ${guidelines}`;
+ * ```
+ */
 export const format = createFormat();
 
 /**
  * // TODO:
- * - use factory function instead of chaining with/only? prevents prototype props intellisense
  * - add branded type for formatted string?
  */

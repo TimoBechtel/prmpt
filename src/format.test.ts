@@ -1,6 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { stringifier } from './core/stringifier';
-import { createFormat, format } from './format';
+import { createFormat, format, stringifier } from '.';
 
 describe('format', () => {
   test('should trim whitespace', () => {

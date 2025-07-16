@@ -20,13 +20,26 @@ type TemplateFn = <T extends Record<string, unknown>>(
   ...values: TemplateValue<T>[]
 ) => (args: T) => string;
 
+/**
+ * Creates a template function with custom configuration.
+ *
+ * @param config - Configuration object.
+ * @returns A template function.
+ *
+ * @example
+ * ```ts
+ * const template = createTemplate({ format: customFormat });
+ * const greeting = template<{ name: string }>`Hello ${'name'}`;
+ * const result = greeting({ name: 'John' });
+ * ```
+ */
 export function createTemplate(
   config: {
     format?: FormatFn;
   } = {},
 ): TemplateFn {
   const format = config.format ?? defaultFormat;
-  const templateFn = <T extends Record<string, unknown>>(
+  return <T extends Record<string, unknown>>(
     strings: TemplateStringsArray,
     ...values: TemplateValue<T>[]
   ) => {
@@ -51,8 +64,22 @@ export function createTemplate(
       return format(strings, ...resovledValues);
     };
   };
-
-  return templateFn;
 }
 
+/**
+ * Creates a string template function.
+ *
+ * Pass a generic type to specify the arguments it accepts.
+ *
+ * You can use dot notation to access arguments. Note: It only supports one level of nesting.
+ * For more advanced uses, you can use a inline function to access the arguments.
+ *
+ * @example
+ * ```ts
+ * const greeting = template<{ name: string, birthday: Date }>`
+ *  Hello ${'.name'}. You were born ${user => Date.now() - user.birthday.getTime()}ms ago.
+ * `;
+ * const result = greeting({ name: 'John', birthday: new Date('1990-01-01') });
+ * ```
+ */
 export const template = createTemplate();

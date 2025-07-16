@@ -1,7 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { stringifier } from './core/stringifier';
-import { createFormat } from './format';
-import { createTemplate, template } from './template';
+import { createFormat, createTemplate, stringifier, template } from '.';
 
 describe('template', () => {
   test('should return a function', () => {

@@ -9,7 +9,7 @@ export type AnyStringifier = Stringifier<any>;
 export function stringifier<T>(s: {
   when: (value: unknown) => value is T;
   stringify: (value: T, stringify: (value: unknown) => string) => string;
-}): Stringifier<T> {
+}): Readonly<Stringifier<T>> {
   return s;
 }
 
@@ -46,7 +46,7 @@ export const fallbackStringifier = stringifier({
     value !== undefined && value !== null ? JSON.stringify(value) : '',
 });
 
-export const builtInStringifier: AnyStringifier[] = [
+export const builtInStringifier: readonly AnyStringifier[] = [
   dateStringifier,
   booleanStringifier,
   arrayStringifier,

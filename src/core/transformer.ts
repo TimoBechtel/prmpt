@@ -1,6 +1,6 @@
 export type Transformer = (value: string) => string;
 
-export const builtInTransformers: Transformer[] = [
+export const builtInTransformers: readonly Transformer[] = [
   // normalize line endings
   (v) => v.replaceAll('\r\n', '\n'),
   // allow comments to be added in the prompt

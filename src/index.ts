@@ -11,3 +11,6 @@ export type { Stringifier } from './core/stringifier';
 // transformer
 export { builtInTransformers } from './core/transformer';
 export type { Transformer } from './core/transformer';
+
+// brand
+export type { FormattedString } from './core/brand';

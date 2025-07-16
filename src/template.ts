@@ -18,7 +18,7 @@ type TemplateValue<T> =
 type TemplateFn = <T extends Record<string, unknown>>(
   strings: TemplateStringsArray,
   ...values: TemplateValue<T>[]
-) => (args: T) => string;
+) => (args: T) => ReturnType<FormatFn>;
 
 /**
  * Creates a template function with custom configuration.

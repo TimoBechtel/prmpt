@@ -13,10 +13,11 @@ import { builtInTransformers, type Transformer } from './core/transformer';
  * const prompt = format`Adhere to the following guidelines: \n ${guidelines}`;
  * ```
  */
-export type FormatFn = (
-  strings: TemplateStringsArray,
-  ...values: unknown[]
-) => string;
+export interface FormatFn {
+  // using an interface to allow overriding it using declare module
+  // eslint-disable-next-line @typescript-eslint/prefer-function-type
+  (strings: TemplateStringsArray, ...values: unknown[]): string;
+}
 
 /**
  * Create a custom format instance.
@@ -95,8 +96,3 @@ export function createFormat(
  * ```
  */
 export const format = createFormat();
-
-/**
- * // TODO:
- * - add branded type for formatted string?
- */

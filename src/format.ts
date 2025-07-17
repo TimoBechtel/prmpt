@@ -63,12 +63,12 @@ export function createFormat(
 ): FormatFn {
   const stringifiers = config.replaceBuiltIns
     ? (config.stringifier ?? builtInStringifier)
-    : //   add custom ones first, so they can override built-in ones
+    : //   add custom ones first, so they can override built-in ones (run first)
       [...(config.stringifier ?? []), ...builtInStringifier];
   const transformers = config.replaceBuiltIns
     ? (config.transformers ?? builtInTransformers)
-    : //   add custom ones first, so they can override built-in ones
-      [...(config.transformers ?? []), ...builtInTransformers];
+    : //   apply custom ones after built-in ones so they can override them (run last)
+      [...builtInTransformers, ...(config.transformers ?? [])];
 
   return (strings, ...values) => {
     const result = strings.reduce((acc, string, index) => {

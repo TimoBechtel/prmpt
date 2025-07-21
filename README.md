@@ -1,4 +1,4 @@
-<h1 align="center">💬 <br/> prmpt</h1>
+<h1 align="center">💬 <br/> prmt</h1>
 <p align="center"><i>Type-safe, composable string templating and formatting for llms.</i></p>
 <p align="center">
   <a href="#" target="_blank">
@@ -23,7 +23,7 @@
 
 ## About
 
-**prmpt** is a tiny, type-safe library for building composable string templates and formatting. Useful for ai prompts, and anywhere you need to need text templating and/or formatting.
+**prmt** is a tiny, type-safe library for building composable string templates and formatting. Useful for ai prompts, and anywhere you need to need text templating and/or formatting.
 
 ## Example
 
@@ -63,13 +63,13 @@ const result = generateText({
 Picks your package manager automatically:
 
 ```sh
-npx nypm install prmpt
+npx nypm install prmt
 ```
 
 Or manually:
 
 ```sh
-npm install prmpt
+npm install prmt
 ```
 
 ## Usage
@@ -79,7 +79,7 @@ npm install prmpt
 Format and clean up multi-line strings with the `format` tag:
 
 ```ts
-import { format } from 'prmpt';
+import { format } from 'prmt';
 
 const guidelines = [
    'Be concise',
@@ -107,7 +107,7 @@ _Note: The logic for comments is currently very simple: It removes everything af
 You can create a custom format instance:
 
 ```ts
-import { createFormat } from 'prmpt';
+import { createFormat } from 'prmt';
 
 const customFormat = createFormat(/* custom config */);
 ```
@@ -119,7 +119,7 @@ See [Custom Stringifiers](#custom-stringifiers) and [Custom Transformers](#custo
 Create type-safe templates with argument interpolation:
 
 ```ts
-import { template } from 'prmpt';
+import { template } from 'prmt';
 
 const greeting = template<{ name: string }>`Hello ${'.name'}`;
 
@@ -141,7 +141,7 @@ birthday({ birthday: new Date('1990-01-01') }); // 'You were born 131558400000ms
 You can create a template with a custom format instance:
 
 ```ts
-import { createTemplate, createFormat } from 'prmpt';
+import { createTemplate, createFormat } from 'prmt';
 
 const format = createFormat({ /* custom config */ });
 const myTemplate = createTemplate({ format });
@@ -151,10 +151,10 @@ See [Custom Stringifiers](#custom-stringifiers) and [Custom Transformers](#custo
 
 ### Custom Stringifiers
 
-Extend prmpt's built-in stringifiers. They will be applied in the order they are defined, **before** any built-in stringifiers.
+Extend prmt's built-in stringifiers. They will be applied in the order they are defined, **before** any built-in stringifiers.
 
 ```ts
-import { createFormat, stringifier, builtInStringifiers } from 'prmpt';
+import { createFormat, stringifier, builtInStringifiers } from 'prmt';
 
 const customFormat = createFormat({
   stringifier: {
@@ -177,10 +177,10 @@ customFormat`${user}`; // 'User: John'
 
 ### Custom Transformers
 
-Extend prmpt's built-in transformers to customize the final string output. They will be applied in the order they are defined, **after** any built-in transformers.
+Extend prmt's built-in transformers to customize the final string output. They will be applied in the order they are defined, **after** any built-in transformers.
 
 ```ts
-import { createFormat } from 'prmpt';
+import { createFormat } from 'prmt';
 
 const upperFormat = createFormat({
   transformers: {
@@ -196,7 +196,7 @@ upperFormat`
 
 ### Mix and Match
 
-`prmpt` includes a built-in utility to mix and match built-in stringifiers and transformers.
+`prmt` includes a built-in utility to mix and match built-in stringifiers and transformers.
 
 #### Methods
 
@@ -207,7 +207,7 @@ upperFormat`
 #### Examples
 
 ```ts
-import { createFormat, stringifier } from 'prmpt';
+import { createFormat, stringifier } from 'prmt';
 
 const onlyDateFormat = createFormat({
   stringifier: builtInStringifiers
@@ -226,7 +226,7 @@ onlyDateFormat`${new Date('2025-01-01')}`; // '2025-01-01T00:00:00.000Z'
 Or for transformers:
 
 ```ts
-import { createFormat, builtInTransformers } from 'prmpt';
+import { createFormat, builtInTransformers } from 'prmt';
 
 const rawFormat = createFormat({
   // keep all built-in transformers, except the one we don't want
@@ -245,10 +245,10 @@ rawFormat`
 This is useful to make sure strings are properly formatted before being used in a prompt.
 
 ```ts
-// prmpt.d.ts
-import { FormattedString } from 'prmpt';
+// prmt.d.ts
+import { FormattedString } from 'prmt';
 
-declare module 'prmpt' {
+declare module 'prmt' {
   interface FormatFn {
     (strings: TemplateStringsArray, ...values: unknown[]): FormattedString;
   }

@@ -1,8 +1,8 @@
 {
-  "name": "prmpt",
+  "name": "prmt",
   "version": "1.0.0",
   "description": "Type-safe, composable string templating and formatting for llms.",
-  "repository": "git@github.com:TimoBechtel/prmpt.git",
+  "repository": "git@github.com:TimoBechtel/prmt.git",
   "author": "Timo Bechtel",
   "license": "MIT",
   "type": "module",

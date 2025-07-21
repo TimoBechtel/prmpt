@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/TimoBechtel/prmt/compare/v1.0.0...v1.1.0) (2025-07-21)
+
+
+### Features
+
+* rename package to prmt ([ccb8b3a](https://github.com/TimoBechtel/prmt/commit/ccb8b3a97803b3283558e95d4f47a24797b93eb6))
+
 # 1.0.0 (2025-07-21)
 
 

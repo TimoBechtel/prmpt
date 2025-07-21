@@ -1,8 +1,25 @@
 {
   "name": "prmpt",
+  "version": "1.0.0",
+  "description": "Type-safe, composable string templating and formatting for llms.",
+  "repository": "git@github.com:TimoBechtel/prmpt.git",
+  "author": "Timo Bechtel",
+  "license": "MIT",
   "type": "module",
+  "keywords": [
+    "ai",
+    "llm",
+    "prompt",
+    "template",
+    "templating",
+    "string",
+    "text",
+    "formatting"
+  ],
   "scripts": {
-    "build": "zshy"
+    "prepack": "bun run build",
+    "build": "zshy",
+    "test": "bun test"
   },
   "zshy": {
     "exports": {
@@ -10,6 +27,8 @@
     }
   },
   "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "@timobechtel/style": "^1.14.0",
     "@types/bun": "latest",
     "eslint": "^8.57.1",
@@ -21,7 +40,8 @@
     "typescript": "^5.8.3"
   },
   "files": [
-    "dist"
+    "dist",
+    "package.json"
   ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

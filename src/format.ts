@@ -98,11 +98,18 @@ export function createFormat<Config extends FormatConfig = DefaultFormatConfig>(
     const result = strings.reduce((acc, string, index) => {
       const value = values[index];
 
-      const stringify = (value: unknown) => {
+      const stringify = (value: unknown, visited = new WeakSet()): string => {
+        if (typeof value === 'object' && value !== null) {
+          if (visited.has(value)) {
+            return '[Circular Reference]';
+          }
+          visited.add(value);
+        }
+
         const stringifier =
           stringifiers.find((stringifier) => stringifier.when(value)) ??
           fallbackStringifier;
-        return stringifier.stringify(value, stringify);
+        return stringifier.stringify(value, (v) => stringify(v, visited));
       };
 
       return acc + string + stringify(value);

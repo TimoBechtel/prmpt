@@ -154,4 +154,12 @@ describe('format default stringifier', () => {
       ${['Hello', 'World']}
     `).toBe('- Hello\n- World');
   });
+
+  test('handles circular references', () => {
+    const array: unknown[] = [1, 2, 3];
+    array.push(array);
+    expect(format`
+      ${array}
+    `).toBe('- 1\n- 2\n- 3\n- [Circular Reference]');
+  });
 });

@@ -1,5 +1,11 @@
 import { describe, expect, test } from 'bun:test';
-import { createFormat, format, stringifier } from '.';
+import {
+  builtInStringifiers,
+  builtInTransformers,
+  createFormat,
+  format,
+  stringifier,
+} from '.';
 
 describe('format', () => {
   test('should trim whitespace', () => {
@@ -49,8 +55,8 @@ describe('format', () => {
 
   test('should allow custom stringifiers', () => {
     const customFormat = createFormat({
-      stringifier: [
-        stringifier({
+      stringifier: builtInStringifiers.extend({
+        date: stringifier({
           when: (value) => value instanceof Date,
           stringify: (value) =>
             value.toLocaleDateString('de-DE', {
@@ -59,7 +65,7 @@ describe('format', () => {
               day: '2-digit',
             }),
         }),
-      ],
+      }),
     });
 
     expect(customFormat`
@@ -75,7 +81,9 @@ describe('format', () => {
 
   test('should allow custom transformers', () => {
     const customFormat = createFormat({
-      transformers: [(value) => value.toUpperCase()],
+      transformers: builtInTransformers.extend({
+        uppercase: (value) => value.toUpperCase(),
+      }),
     });
 
     expect(customFormat`
@@ -85,8 +93,9 @@ describe('format', () => {
 
   test('should allow overriding transformers', () => {
     const customFormat = createFormat({
-      transformers: [(value) => value.toUpperCase()],
-      replaceBuiltIns: true,
+      transformers: {
+        uppercase: (value) => value.toUpperCase(),
+      },
     });
 
     expect(customFormat`

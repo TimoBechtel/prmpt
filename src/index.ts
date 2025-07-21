@@ -5,7 +5,7 @@ export { createTemplate, template } from './template';
 export { createFormat, format } from './format';
 
 // stringifier
-export { builtInStringifier, stringifier } from './core/stringifier';
+export { builtInStringifiers, stringifier } from './core/stringifier';
 export type { Stringifier } from './core/stringifier';
 
 // transformer

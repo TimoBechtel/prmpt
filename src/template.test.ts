@@ -1,5 +1,11 @@
 import { describe, expect, test } from 'bun:test';
-import { createFormat, createTemplate, stringifier, template } from '.';
+import {
+  builtInStringifiers,
+  createFormat,
+  createTemplate,
+  stringifier,
+  template,
+} from '.';
 
 describe('template', () => {
   test('should return a function', () => {
@@ -22,8 +28,8 @@ describe('template', () => {
 
   test('should allow custom stringifiers', () => {
     const format = createFormat({
-      stringifier: [
-        stringifier({
+      stringifier: builtInStringifiers.extend({
+        date: stringifier({
           when: (value) => value instanceof Date,
           stringify: (value) =>
             value.toLocaleDateString('en-US', {
@@ -32,7 +38,7 @@ describe('template', () => {
               day: '2-digit',
             }),
         }),
-      ],
+      }),
     });
     const template = createTemplate({
       format,
@@ -47,8 +53,9 @@ describe('template', () => {
 
   test('allows overriding transformers', () => {
     const format = createFormat({
-      transformers: [(value) => value.toUpperCase()],
-      replaceBuiltIns: true,
+      transformers: {
+        uppercase: (value) => value.toUpperCase(),
+      },
     });
     const template = createTemplate({
       format,

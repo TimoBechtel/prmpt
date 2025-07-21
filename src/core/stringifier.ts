@@ -1,3 +1,5 @@
+import { Builtins } from './builtins';
+
 export type Stringifier<T> = {
   when: (value: T) => value is T;
   stringify: (value: T, stringify: (value: unknown) => string) => string;
@@ -13,29 +15,29 @@ export function stringifier<T>(s: {
   return s;
 }
 
-export const dateStringifier = stringifier({
+const dateStringifier = stringifier({
   when: (value) => value instanceof Date,
   stringify: (value) =>
-    value.toLocaleDateString('en-US', {
+    value.toLocaleDateString(undefined, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     }),
 });
 
-export const booleanStringifier = stringifier({
+const booleanStringifier = stringifier({
   when: (value) => typeof value === 'boolean',
   stringify: (value) => (!value ? '' : 'true'),
 });
 
-export const arrayStringifier = stringifier({
+const arrayStringifier = stringifier({
   when: (value) => Array.isArray(value),
   stringify: (value: unknown[], stringify) => {
     return value.map((v) => `- ${stringify(v)}`).join('\n');
   },
 });
 
-export const stringStringifier = stringifier({
+const stringStringifier = stringifier({
   when: (value) => typeof value === 'string' || value instanceof String,
   stringify: (value) => value.toString(),
 });
@@ -46,9 +48,17 @@ export const fallbackStringifier = stringifier({
     value !== undefined && value !== null ? JSON.stringify(value) : '',
 });
 
-export const builtInStringifier: readonly AnyStringifier[] = [
-  dateStringifier,
-  booleanStringifier,
-  arrayStringifier,
-  stringStringifier,
-];
+const stringifiers = {
+  date: dateStringifier,
+  booleanTrue: booleanStringifier,
+  arrayToBulletList: arrayStringifier,
+  string: stringStringifier,
+} as const;
+
+export const builtInStringifiers = new Builtins<
+  typeof stringifiers,
+  AnyStringifier
+>(stringifiers, {
+  // extensions should be applied before built-ins so that they are matched first
+  extensionOrder: 'before',
+});

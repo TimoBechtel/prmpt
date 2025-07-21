@@ -1,4 +1,9 @@
-import { format as defaultFormat, type FormatFn } from './format';
+import {
+  format as defaultFormat,
+  type DefaultFormatConfig,
+  type FormatConfig,
+  type FormatFn,
+} from './format';
 
 const ARGUMENT_KEY_PREFIX = '.';
 
@@ -15,10 +20,16 @@ type TemplateValue<T> =
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   | (unknown & {});
 
-type TemplateFn = <T extends Record<string, unknown>>(
+type TemplateFn<Config> = <T extends Record<string, unknown>>(
   strings: TemplateStringsArray,
   ...values: TemplateValue<T>[]
-) => (args: T) => ReturnType<FormatFn>;
+) => (args: T) => ReturnType<FormatFn<Config>>; // need this return type to allow type branding by module augmentation
+
+type TemplateConfig<FormatConfig> = {
+  format?: FormatFn<FormatConfig>;
+};
+
+type DefaultTemplateConfig = TemplateConfig<DefaultFormatConfig>;
 
 /**
  * Creates a template function with custom configuration.
@@ -33,11 +44,9 @@ type TemplateFn = <T extends Record<string, unknown>>(
  * const result = greeting({ name: 'John' });
  * ```
  */
-export function createTemplate(
-  config: {
-    format?: FormatFn;
-  } = {},
-): TemplateFn {
+export function createTemplate<
+  Config extends TemplateConfig<FormatConfig> = DefaultTemplateConfig,
+>(config: Config = {} as Config): TemplateFn<Config> {
   const format = config.format ?? defaultFormat;
   return <T extends Record<string, unknown>>(
     strings: TemplateStringsArray,

@@ -1,16 +1,27 @@
+import { Builtins } from './builtins';
+
 export type Transformer = (value: string) => string;
 
-export const builtInTransformers: readonly Transformer[] = [
-  // normalize line endings
-  (v) => v.replaceAll('\r\n', '\n'),
-  // allow comments to be added in the prompt
-  (v) => v.replaceAll(/\/\/[^\n]*/g, ''),
-  // remove whitespace between newlines
-  (v) => v.replaceAll(/\n[ \t]+/g, '\n'),
-  (v) => v.replaceAll(/[ \t]+\n/g, '\n'),
-  // collapse whitespace
-  (v) => v.replaceAll(/[\t ]+/g, ' '),
-  // remove more than 2 consecutive newlines
-  (v) => v.replaceAll(/\n{3,}/g, '\n\n'),
-  (v) => v.trim(),
-];
+const transformers = {
+  normalizeLineEndings: ((v: string) =>
+    v.replaceAll('\r\n', '\n')) as Transformer,
+  stripComments: ((v: string) =>
+    v.replaceAll(/\/\/[^\n]*/g, '')) as Transformer,
+  removeWhitespaceBetweenLines: ((v: string) =>
+    v
+      .replaceAll(/\n[ \t]+/g, '\n')
+      .replaceAll(/[ \t]+\n/g, '\n')) as Transformer,
+  collapseWhitespace: ((v: string) =>
+    v.replaceAll(/[\t ]+/g, ' ')) as Transformer,
+  removeMoreThan2ConsecutiveNewlines: ((v: string) =>
+    v.replaceAll(/\n{3,}/g, '\n\n')) as Transformer,
+  trim: ((v: string) => v.trim()) as Transformer,
+} as const satisfies Record<string, Transformer>;
+
+export const builtInTransformers = new Builtins<typeof transformers>(
+  transformers,
+  {
+    // extensions should be applied after built-ins so that they can format the output of the built-ins
+    extensionOrder: 'after',
+  },
+);

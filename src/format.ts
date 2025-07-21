@@ -1,5 +1,6 @@
+import { Builtins } from './core/builtins';
 import {
-  builtInStringifier,
+  builtInStringifiers,
   fallbackStringifier,
   type AnyStringifier,
 } from './core/stringifier';
@@ -13,62 +14,85 @@ import { builtInTransformers, type Transformer } from './core/transformer';
  * const prompt = format`Adhere to the following guidelines: \n ${guidelines}`;
  * ```
  */
-export interface FormatFn {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface FormatFn<Config> {
   // using an interface to allow overriding it using declare module
   // eslint-disable-next-line @typescript-eslint/prefer-function-type
   (strings: TemplateStringsArray, ...values: unknown[]): string;
 }
 
+type FormatConfigWithPlainObjects = {
+  /**
+   * List of stringifiers to use.
+   *
+   * Stringifiers convert any value into a string.
+   *
+   * @default builtInStringifier
+   */
+  stringifier?: { [key: string]: AnyStringifier };
+  /**
+   * List of transformers to use.
+   *
+   * Transformers allow you to modify the stringified output after it has been stringified.
+   *
+   * @default builtInTransformers
+   */
+  transformers?: { [key: string]: Transformer };
+};
+
+type FormatConfigWithBuiltins = {
+  /**
+   * List of stringifiers to use.
+   *
+   * Stringifiers convert any value into a string.
+   *
+   * @default builtInStringifier
+   */
+  stringifier?: Builtins<{ [key: string]: AnyStringifier }, AnyStringifier>;
+  /**
+   * List of transformers to use.
+   *
+   * Transformers allow you to modify the stringified output after it has been stringified.
+   *
+   * @default builtInTransformers
+   */
+  transformers?: Builtins<{ [key: string]: Transformer }, Transformer>;
+};
+
+export type FormatConfig =
+  | FormatConfigWithPlainObjects
+  | FormatConfigWithBuiltins;
+
+// indicate the default config
+// -> creating a separate type will display "DefaultFormatConfig" in intellisense
+export type DefaultFormatConfig = {
+  [key in keyof FormatConfigWithPlainObjects]: FormatConfigWithPlainObjects[key];
+};
+
+export function createFormat<
+  Config extends FormatConfigWithPlainObjects = DefaultFormatConfig,
+>(config?: Config): FormatFn<Config>;
+
+export function createFormat<Config extends FormatConfigWithBuiltins>(
+  config?: Config,
+): FormatFn<Config>;
 /**
  * Create a custom format instance.
  */
-export function createFormat(
-  config: {
-    /**
-     * List of stringifiers to use.
-     *
-     * Stringifiers convert any value into a string.
-     *
-     * @default builtInStringifier
-     */
-    stringifier?: AnyStringifier[];
-    /**
-     * List of transformers to use.
-     *
-     * Transformers allow you to modify the stringified output after it has been stringified.
-     *
-     * @default builtInTransformers
-     */
-    transformers?: Transformer[];
-    /**
-     * If true, the built-in stringifiers and transformers will be replaced by the ones provided.
-     * Omitting stringifier or transformers will use the built-in ones.
-     *
-     * You can still import the built-in stringifiers and transformers to mix and match.
-     *
-     * @default false
-     *
-     * @example
-     * ```ts
-     * // replaces built-in stringifiers, but keeps built-in transformers
-     * import { dateStringifier, booleanStringifier } from 'prmpt';
-     * const format = createFormat({
-     *   stringifier: [dateStringifier, booleanStringifier],
-     *   replaceBuiltIns: true,
-     * });
-     * ```
-     */
-    replaceBuiltIns?: boolean;
-  } = {},
-): FormatFn {
-  const stringifiers = config.replaceBuiltIns
-    ? (config.stringifier ?? builtInStringifier)
-    : //   add custom ones first, so they can override built-in ones (run first)
-      [...(config.stringifier ?? []), ...builtInStringifier];
-  const transformers = config.replaceBuiltIns
-    ? (config.transformers ?? builtInTransformers)
-    : //   apply custom ones after built-in ones so they can override them (run last)
-      [...builtInTransformers, ...(config.transformers ?? [])];
+export function createFormat<Config extends FormatConfig = DefaultFormatConfig>(
+  config: Config = {} as Config,
+): FormatFn<Config> {
+  const stringifiers = Object.values(
+    config.stringifier instanceof Builtins
+      ? config.stringifier.get()
+      : (config.stringifier ?? builtInStringifiers.get()),
+  ) as AnyStringifier[];
+
+  const transformers = Object.values(
+    config.transformers instanceof Builtins
+      ? config.transformers.get()
+      : (config.transformers ?? builtInTransformers.get()),
+  );
 
   return (strings, ...values) => {
     const result = strings.reduce((acc, string, index) => {

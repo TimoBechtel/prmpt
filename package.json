@@ -2,7 +2,10 @@
   "name": "prmt",
   "version": "1.1.0",
   "description": "Type-safe, composable string templating and formatting for llms.",
-  "repository": "git@github.com:TimoBechtel/prmt.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TimoBechtel/prmt"
+  },
   "author": "Timo Bechtel",
   "license": "MIT",
   "type": "module",
@@ -29,15 +32,15 @@
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
-    "@timobechtel/style": "^1.14.0",
-    "@types/bun": "latest",
-    "eslint": "^8.57.1",
-    "prettier": "^3.6.2",
-    "semantic-release": "^24.2.7",
-    "zshy": "^0.2.3"
+    "@timobechtel/style": "^2.0.1",
+    "@types/bun": "^1.3.9",
+    "eslint": "^9.39.3",
+    "prettier": "^3.8.1",
+    "semantic-release": "^25.0.3",
+    "zshy": "^0.7.0"
   },
   "peerDependencies": {
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.3"
   },
   "files": [
     "dist",
